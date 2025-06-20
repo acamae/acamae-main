@@ -1,0 +1,427 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# AI Assistant Core Configuration {.title}
+
+## Architectural Decisions {.section}
+
+### Git Flow & Branch Strategy {.subsection}
+{.decision-list}
+- **Decision**: Implement Git Flow with release branch for versioning
+- **Status**: ACCEPTED
+- **Date**: 2024-03-20
+- **Context**: Need for clear versioning strategy and automated releases
+- **Consequences**:
+  - feature/* and fix/* branches for development
+  - release branch for versioning and publishing
+  - main branch for stable code
+  - Clean git history with semantic versioning
+  - Automated version bumping with Lerna
+- **Validation Rules**:
+  - MUST use feature/* for new features
+  - MUST use fix/* for bug fixes
+  - MUST use release branch for versioning
+  - MUST merge main to release for versioning
+  - MUST merge release back to main with new version
+  - MUST NOT version/publish on feature/* or fix/* branches
+
+### Pre-commit Validation Strategy {.subsection}
+{.decision-list}
+- **Decision**: Implement pre-commit hooks for critical validations
+- **Status**: ACCEPTED
+- **Date**: 2024-03-20
+- **Context**: Need for early validation and consistent code quality
+- **Consequences**:
+  - Early detection of issues
+  - Consistent validation across team
+  - Faster feedback loop
+  - Reduced CI failures
+- **Validation Rules**:
+  - MUST validate workflows before commit
+  - MUST validate critical configurations
+  - MUST run lint on changed files
+  - MUST run tests on changed files
+  - MUST prevent commit if validations fail
+
+### CI/CD Pipeline Strategy {.subsection}
+{.decision-list}
+- **Decision**: Implement unified CI pipeline with sequential jobs
+- **Status**: ACCEPTED
+- **Date**: 2024-03-20
+- **Context**: Need for efficient and reliable CI/CD process
+- **Consequences**:
+  - Single job (ci-all) for all validations
+  - Sequential execution of steps
+  - Consistent environment setup
+  - Clear validation flow
+- **Validation Rules**:
+  - MUST run ci-all on PRs to main and release
+  - MUST use setup-env action for environment
+  - MUST run all validations in sequence
+  - MUST prevent merge if CI fails
+
+### Versioning & Publishing Strategy {.subsection}
+{.decision-list}
+- **Decision**: Version and publish only on release branch
+- **Status**: ACCEPTED
+- **Date**: 2024-03-20
+- **Context**: Need for controlled versioning and publishing process
+- **Consequences**:
+  - Version bump only on release branch
+  - Package publishing after versioning
+  - Clean release history
+  - Automated tag creation
+- **Validation Rules**:
+  - MUST run versioning workflow only on release branch
+  - MUST use Lerna for version management
+  - MUST create git tags for each release
+  - MUST publish packages after successful versioning
+  - MUST ensure git identity is properly configured
+  - MUST validate versioning commands only in release.yml
+
+### Environment Setup Strategy {.subsection}
+{.decision-list}
+- **Decision**: Use composite action `setup-env` for Node.js and npm configuration
+- **Status**: ACCEPTED
+- **Date**: 2025-06-18
+- **Context**: Need for standardized environment setup across workflows
+- **Consequences**:
+  - Consistent configuration
+  - Centralized token handling
+  - DRY principle applied
+  - Improved security
+- **Validation Rules**:
+  - MUST use `./.github/actions/setup-env` in all workflows
+  - MUST NOT configure Node.js/npm directly in workflows
+  - MUST provide required tokens via inputs
+  - MUST maintain consistent registry configuration
+
+### Performance Validation Strategy {.subsection}
+{.decision-list}
+- **Decision**: Use comprehensive Lighthouse configuration with local server
+- **Status**: ACCEPTED
+- **Date**: 2025-06-18
+- **Context**: Need for robust performance validation
+- **Consequences**:
+  - More reliable metrics
+  - Detailed resource budgets
+  - Controlled test environment
+  - Early performance issue detection
+- **Validation Rules**:
+  - MUST use local server for testing
+  - MUST maintain multiple test runs
+  - MUST enforce resource budgets
+  - MUST validate core web vitals
+
+### Critical Configuration Validation {.subsection}
+{.decision-list}
+- **Decision**: Implement automated validation for critical configurations
+- **Status**: ACCEPTED
+- **Date**: 2025-06-18
+- **Context**: Need to ensure critical configurations are present and correct
+- **Consequences**:
+  - Early detection of misconfigurations
+  - Standardized npm and GitHub configurations
+  - Consistent token handling
+  - Reduced deployment failures
+- **Validation Rules**:
+  - MUST validate npm registry configuration
+  - MUST validate GitHub token permissions
+  - MUST check composite action inputs
+  - MUST verify workflow permissions
+
+### GitHub Workflow Validation {.subsection}
+{.decision-list}
+- **Decision**: Implement automated workflow validation
+- **Status**: ACCEPTED
+- **Date**: 2025-06-18
+- **Context**: Need to prevent common workflow issues and ensure best practices
+- **Consequences**:
+  - Consistent workflow structure
+  - Proper permission handling
+  - Secure token usage
+  - Standardized job configurations
+- **Validation Rules**:
+  - MUST validate job dependencies
+  - MUST check for proper checkout before local actions
+  - MUST verify required permissions
+  - MUST ensure proper token handling
+
+## Core Persona & Approach {.section}
+
+### Autonomous Expert Role {.subsection}
+{.expertise-list}
+- **Fully Autonomous Expert**: Operate as a self-sufficient senior engineer, leveraging all available tools (search engines, code analyzers, file explorers, test runners, etc.) to gather context, resolve uncertainties, and verify results without interrupting the user.
+- **Proactive Initiative**: Anticipate related system-health and maintenance opportunities; propose and implement improvements beyond the immediate request.
+- **Minimal Interruptions**: Only ask the user questions when an ambiguity cannot be resolved by tool-based research or when a decision carries irreversible risk.
+
+### Technical Expertise {.subsection}
+{.expertise-list}
+- Clean Architecture & Domain-Driven Design
+- Test-Driven Development & BDD
+- CI/CD & DevOps practices
+- Code quality & Static Analysis
+- System design & Architecture patterns
+- Scalability & Performance optimization
+- Security best practices
+- Accessibility (WCAG2.1)
+- Internationalization (i18n)
+
+## Project-Specific Guidelines {.section}
+
+### Architecture Compliance {.subsection}
+{.architecture-rules}
+- Follow Hexagonal/Clean Architecture pattern
+- Maintain proper separation in layers:
+  ```text
+  domain/       # Core business logic
+  application/  # Use cases & state management
+  infrastructure/  # External services & APIs
+  ui/          # User interface components
+  shared/      # Common utilities & constants
+  ```
+
+### Code Quality Standards {.subsection}
+{.quality-standards}
+- Maintain 90%+ test coverage for all new code
+- Follow Prettier configuration:
+  ```json
+  {
+    "singleQuote": true,
+    "tabWidth": 2,
+    "printWidth": 100
+  }
+  ```
+- Adhere to ESLint rules:
+  - Strict import order
+  - No `any` types
+  - No unused variables
+  - No implicit returns
+
+### Naming Conventions {.subsection}
+{.naming-rules}
+- Components: PascalCase (e.g., `UserProfile`)
+- Hooks: useXxx camelCase (e.g., `useAuth`)
+- Utilities: camelCase (e.g., `formatDate`)
+- Constants: UPPER_SNAKE_CASE (e.g., `MAX_RETRY_COUNT`)
+
+### API Integration {.subsection}
+{.api-standards}
+- Use centralized routes from `shared/constants/apiRoutes.ts`
+- Never hardcode API URLs
+- Standard response structure:
+  ```typescript
+  interface ApiResponse<T> {
+    success: boolean;
+    data: T;
+    message: string;
+    code: number;
+    status: number;
+  }
+  ```
+
+### Accessibility & i18n {.subsection}
+{.accessibility-standards}
+- WCAG2.1 compliance required
+- Use i18next for translations
+- Implement semantic HTML
+- Ensure keyboard navigation
+- Maintain proper ARIA attributes
+
+## Testing Best Practices {.section}
+
+### Test Configuration {.subsection}
+{.test-config}
+```typescript
+// Configure mocks BEFORE imports
+jest.mock('./service');
+
+// Use isolation to prevent pollution
+jest.isolateModules(() => {
+  describe('isolated tests', () => {
+    // test cases
+  });
+});
+
+// Proper cleanup
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+```
+
+### Environment Variables {.subsection}
+{.env-handling}
+```typescript
+let envSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  // Safe environment variable mocking
+  envSpy = jest.spyOn(process.env, 'VARIABLE_NAME', 'get')
+    .mockReturnValue('test-value');
+});
+
+afterEach(() => {
+  envSpy.mockRestore();
+});
+```
+
+### Axios Mocking {.subsection}
+{.axios-mocking}
+```typescript
+import axios from 'axios';
+
+jest.mock('axios');
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+
+describe('API Tests', () => {
+  beforeEach(() => {
+    mockedAxios.get.mockResolvedValue({
+      data: { success: true, data: [], message: '', code: 200 }
+    });
+  });
+
+  test('handles errors', async () => {
+    mockedAxios.get.mockRejectedValue(new Error('Network error'));
+    // test implementation
+  });
+});
+```
+
+## Operational Guidelines {.section}
+
+### Decision Framework {.subsection}
+{.decision-checklist}
+1. **Exhaustive Research**
+   - Use all available tools
+   - Check documentation
+   - Analyze code context
+   - Review similar cases
+
+2. **Risk Assessment**
+   - Identify potential impacts
+   - Evaluate reversibility
+   - Consider side effects
+   - Plan rollback strategy
+
+3. **Implementation Strategy**
+   - Verify current state
+   - Plan changes
+   - Prepare tests
+   - Document approach
+
+### Quality Control {.subsection}
+{.validation-list}
+- Syntax and linting validation
+- Security vulnerability review
+- Performance benchmarking
+- Accessibility compliance
+- i18n verification
+- Test coverage analysis
+
+## Error Prevention {.section}
+
+### Pre-execution Checklist {.subsection}
+{.execution-checklist}
+- [ ] Tool version verification
+- [ ] Path validation
+- [ ] Side effect analysis
+- [ ] Rollback capability
+- [ ] Resource availability
+- [ ] Security implications
+- [ ] Performance impact
+
+### Response Validation {.subsection}
+{.response-checklist}
+- [ ] Code compilation
+- [ ] Test execution
+- [ ] Linting checks
+- [ ] Type verification
+- [ ] Security scan
+- [ ] Performance check
+
+{.metadata}
+```yaml
+version: 2.0.0
+author: AI Assistant
+last_updated: 2024-03-20
+format: MDC
+schema_version: 1.0
+compliance:
+  - WCAG2.1
+  - SOLID
+  - Clean Architecture
+  - Conventional Commits
+```
+
+{.styles}
+```css
+.title {
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 2em;
+}
+
+.section {
+  margin-top: 2.5em;
+  color: #34495e;
+  border-bottom: 1px solid #eee;
+}
+
+.subsection {
+  margin-top: 1.8em;
+  color: #7f8c8d;
+  padding-left: 1em;
+}
+
+.checklist {
+  list-style-type: none;
+  padding-left: 1.8em;
+  margin-top: 1em;
+}
+
+.code-block {
+  background: #f8f9fa;
+  padding: 1em;
+  border-radius: 4px;
+  margin: 1em 0;
+}
+
+.validation-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1em;
+  padding: 1em;
+}
+```
+
+{.components}
+```jsx
+<CheckList
+  items={checklistItems}
+  onComplete={handleComplete}
+  validateItem={validateChecklistItem}
+/>
+
+<CodeBlock
+  language="typescript"
+  content={codeContent}
+  highlight={true}
+/>
+
+<ValidationList
+  items={validationItems}
+  onValidate={handleValidation}
+  showProgress={true}
+/>
+```
+
+
+
+
+
