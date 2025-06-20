@@ -1,0 +1,65 @@
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ../node_modules/@acamae/frontend
+    env_file:
+      - ../.env.${NODE_ENV:-development}
+    expose:
+      - "3000"
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ../node_modules/@acamae/backend
+    env_file:
+      - ../.env.${NODE_ENV:-development}
+    expose:
+      - "4000"
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  db:
+    image: mysql:8.0
+    env_file:
+      - ../.env.${NODE_ENV:-development}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    expose:
+      - "3306"
+    networks:
+      - app-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    env_file:
+      - ../.env.${NODE_ENV:-development}
+    expose:
+      - "80"
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql_data: 

@@ -134,3 +134,12 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Exclude local SSL configuration files
+docker/ssl/*.crt
+docker/ssl/*.key
+docker/ssl/*.pem
+
+# npmrc file
+.npmrc
+.nvmrc
