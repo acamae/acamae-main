@@ -18,7 +18,7 @@ function isOpenSSLInstalled() {
   try {
     execSync('openssl version', { stdio: 'ignore' });
     return true;
-  } catch (error) {
+  } catch {
     return false;
   }
 }
@@ -54,7 +54,9 @@ function main() {
     console.error('- Windows: https://slproweb.com/products/Win32OpenSSL.html');
     console.error('- macOS: brew install openssl');
     console.error('- Linux: sudo apt-get install openssl');
-    console.error('\nAlternativa: Si estás en Windows, puedes intentar ejecutar este script desde Git Bash,');
+    console.error(
+      '\nAlternativa: Si estás en Windows, puedes intentar ejecutar este script desde Git Bash,'
+    );
     console.error('ya que viene con OpenSSL preinstalado. Simplemente abre Git Bash y ejecuta:');
     console.error('cd /c/Users/alfon/www/acamae-main && node scripts/generate-ssl.js');
     process.exit(1);
