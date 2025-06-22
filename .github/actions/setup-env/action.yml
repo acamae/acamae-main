@@ -122,18 +122,6 @@ runs:
           ${{ runner.os }}-npm-cache-
           ${{ runner.os }}-npm-
 
-    - name: Cache build outputs
-      uses: actions/cache@v4
-      with:
-        path: |
-          dist
-          .next
-          .cache
-          public/build
-        key: ${{ runner.os }}-build-${{ github.sha }}
-        restore-keys: |
-          ${{ runner.os }}-build-
-
     - name: Create .npmrc file
       shell: bash
       run: |
