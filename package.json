@@ -1,6 +1,6 @@
 {
   "name": "@acamae/main",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Main repository for Acamae project",
   "type": "module",
   "private": false,
